@@ -1,0 +1,42 @@
+#include <stdio.h>
+#include <math.h>
+
+double f(double co[], int p, double x) {
+	double count = 0.0;
+	for (int i = 0; i <= p; i++) {
+		double i0 = i;
+		count += co[i] * pow(x, i0);
+	}
+	return count;
+}
+
+void df(double co[], double cof[], int p) {
+	for (int i = 0; i < p; i++) {
+		cof[i] = co[i + 1] * (i + 1);
+	}
+	return;
+}
+
+int main() {
+	int p;
+	double x;
+	scanf("%d", &p);
+	double co[100];
+	for (int i = p; i >= 0; i--) {
+		scanf("%lf", &co[i]);
+	}
+	scanf("%lf", &x);
+	double cof[100];
+	df(co, cof, p); //求导，求导结果保存在cof数组
+	do {
+		double t = x - f(co, p, x) / f(cof, p - 1, x); //求更接近的零点
+		if (abs(x - t) < pow(10.0, -100.0)) {
+			x = t;
+			break;
+		}
+		x = t;
+	} while (f(co, p, x) != 0);
+	printf("%lf", x);
+}
+
+
