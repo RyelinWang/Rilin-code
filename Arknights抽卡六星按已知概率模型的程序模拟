@@ -1,0 +1,93 @@
+/*
+在下面的程序模拟中，我们使用pool[100]数组进行概率模拟。在该数组中，pool[0]和pool[1]被定义为1，而以后的98个元素全部定义为0，以代表2%的出率。以后当概率增加时，我们将逐次改变pool[i]的定义值，使得$\sum pool[i]=100\cdot P\ \ (P为抽出六星的概率)$
+
+我们使用Dev-C++自带的随机数函数生成随机数，模拟一次抽卡。抽卡的结果即为随机数作为数组下标时，对应的数组元素，1代表抽出六星，0代表未抽出六星。
+
+我们使用data[]数组来记录（在抽出一次六星干员后，下一次）抽出六星干员所需要的抽卡次数。
+
+输入端需要输入一个数值m，m代表我们进行实验的次数，即最终我们会记录m个抽卡次数的数据，并进行平均计算
+
+程序如下：
+
+*/
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+int pool[100] = {1, 1, 0, 0};
+int a[100000000];
+int data[100000000];
+
+int comp(const void *x, const void *y) {
+	return *(int *)x - *(int *)y;
+}
+
+double success(int a[], int n) {
+	double count = 0.0;
+	for (int i = 0; i < n; i++) {
+		if (pool[a[i]]) {
+			count += 1.0;
+		}
+	}
+	return (count / n) * 100;
+}
+
+double average(int data[], int m) {
+	double sum = 0;
+	for (int j = 0; j < m; j++) {
+		sum += data[j];
+	}
+	return sum / m;
+}
+
+void add(int pool[], int n) {
+	for (int i = 0; i < n; i++) {
+		if (pool[i] == 0) {
+			pool[i] = 1;
+			pool[i + 1] = 1;
+			break;
+		}
+	}
+	return;
+}
+
+void renew(int pool[], int n) {
+	for (int i = 2; pool[i] == 1; i++) {
+		pool[i] = 0;
+	}
+}
+
+int main() {
+	int m;
+	scanf("%d", &m);
+	srand((unsigned)time(NULL));
+	for (int j = 0; j < m; j++) {
+		int n = 100000000;
+		for (int i = 0; i < n; i++) {
+			a[i] = rand() % 100;
+			if (i >= 50) {
+				add(pool, n);
+			}
+			if (pool[a[i]]) {
+				data[j] = i + 1;
+				break;
+			}
+		}
+		renew(pool, n);
+	}
+	qsort(data, m, sizeof(int), comp);
+	for (int j = 0; j < m; j++) {
+		printf("%d ", data[j]);
+	}
+	printf("\n");
+	printf("%lf", average(data, m));
+	//printf("%.2lf\n", success(a, n));
+	return 0;
+}
+
+/*
+本程序的输出结果的构成：
+
+一个$1\times m$矩阵，每一个元素均为一次试验中，抽出六星干员所需要的次数，输出结果由小到大排序
+
+一个有理数，代表（在抽出一次六星干员后，第二次）抽出六星干员所需要的平均抽卡数*/
