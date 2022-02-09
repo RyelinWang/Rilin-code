@@ -1,0 +1,28 @@
+//本game改编自2022.2.9游戏活动
+
+//由系统生成一个1~100内的随机数，用户需逐次按照屏幕显示的数字范围输入一个整数，直到输入整数与存储的随机数相同。当一个用户输入的随机数与给定数相同时，认为踩到地雷而死。
+int main() {
+	int r;
+	int guess = -1;
+	srand((unsigned)time(NULL));
+	r = rand() % 100;
+	//printf("%d\n", r);
+	printf("请输入：");
+	scanf("%d", &guess);
+	int min = 0;
+	int max = 100;
+	while (min != -1) {
+		if (guess < min || guess > max) {
+			printf("请重新输入\n");
+		} else if (guess == r) {
+			printf("炸了！\n");
+			break;
+		} else if (guess != r) {
+			min = (min + r) / 2;
+			max = (max + r) / 2;
+			printf("%d~%d\n", min, max);
+		}
+		printf("请输入：");
+		scanf("%d", &guess);
+	}
+}
